@@ -4,10 +4,12 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.MotionEvent
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.aghajari.zoomhelper.ZoomHelper
 import com.bumptech.glide.Glide
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
@@ -33,6 +35,16 @@ class MainActivity : AppCompatActivity() {
         path = File(System.getenv("EXTERNAL_STORAGE")!!)
         askPermissionForStorage()
         postPictureButton()
+
+        ZoomHelper.addZoomableView(findViewById<ImageView>(R.id.selectedImage))
+        zoomFunctionality()
+    }
+
+    private fun zoomFunctionality(){
+        ZoomHelper.addZoomableView(findViewById<ImageView>(R.id.selectedImage))
+    }
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        return ZoomHelper.getInstance().dispatchTouchEvent(ev!!,this) || super.dispatchTouchEvent(ev)
     }
 
     fun setupRV(){
@@ -126,6 +138,7 @@ class MainActivity : AppCompatActivity() {
 
         return list
     }
+
 
     private fun askPermissionForStorage() {
 
