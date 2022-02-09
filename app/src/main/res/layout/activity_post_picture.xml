@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context=".PostPictureActivity">
+
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:elevation="15dp"
+        app:cardCornerRadius="15dp"
+        >
+
+        <ImageView
+            android:id="@+id/pictureToPost"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            />
+
+    </androidx.cardview.widget.CardView>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputEditText"
+
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:drawablePadding="10dp"
+        android:hint="Write a Caption"
+        android:layout_marginTop="30dp"
+        app:layout_anchorGravity="center"
+        app:layout_constraintTop_toBottomOf="@+id/textView24"
+        app:endIconMode="clear_text"
+        app:counterMaxLength="220"
+        app:counterEnabled="true"
+        tools:layout_editor_absoluteX="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:gravity="top" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/hashtag_rv"
+        android:layout_width="match_parent"
+        tools:itemCount="1"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        tools:listitem="@layout/hashtag_rv_item"
+        android:layout_marginHorizontal="20dp"
+        />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteTVLanguages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:layout_marginHorizontal="20dp"
+        android:hint="# Add Hashtag "
+
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        />
+
+
+
+
+
+
+</LinearLayout>
+</ScrollView>
