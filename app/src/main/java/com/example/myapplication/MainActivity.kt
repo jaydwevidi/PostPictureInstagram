@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
 
         Glide.with(applicationContext)
             .load(videoList[0].file)
-            .fitCenter()
+            .centerCrop()
             .into(findViewById<ImageView>(R.id.selectedImage))
         selectedPicture = videoList[0].path
     }
@@ -170,7 +170,7 @@ class MainActivity : AppCompatActivity() {
                 //Log.d("directory found", "= ${i.name}")
                 displayFiles(i)
 
-                if(i.name.endsWith(".jpg")) {
+                if(i.name.endsWith(".jpg") || i.name.endsWith(".jpeg")) {
 
                     val videoObject = VideoObject(i.name , i.path.toString() ,  i )
                     videoList.add(videoObject)
