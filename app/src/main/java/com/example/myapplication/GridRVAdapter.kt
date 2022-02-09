@@ -8,7 +8,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class GridRVAdapter(val dataset: MutableList<VideoObject> ,val context : Context) : RecyclerView.Adapter<GridRVAdapter.MyVH>(){
+class GridRVAdapter(val dataset: MutableList<ImageFileObject>, val context : Context) : RecyclerView.Adapter<GridRVAdapter.MyVH>(){
 
     private lateinit var mListner : MyOnItemClickListner
     interface MyOnItemClickListner {

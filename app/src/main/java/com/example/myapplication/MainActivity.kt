@@ -17,11 +17,12 @@ import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.single.PermissionListener
 import java.io.File
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var path : File
-    val videoList = mutableListOf<VideoObject>()
+    val imageList = mutableListOf<ImageFileObject>()
     private lateinit var selectedPicture : String
 
 
@@ -50,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     fun setupRV(){
         val rv = findViewById<RecyclerView>(R.id.gridImagesRV)
         val list = getList()
-        val mAdapter = GridRVAdapter(videoList , applicationContext)
+        val mAdapter = GridRVAdapter(imageList , applicationContext)
 
 
         mAdapter.msetupOnClickListner(object : GridRVAdapter.MyOnItemClickListner{
@@ -58,11 +59,11 @@ class MainActivity : AppCompatActivity() {
 
 
                 Glide.with(applicationContext)
-                    .load(videoList[position].file)
+                    .load(imageList[position].file)
                     .fitCenter()
                     .into(findViewById<ImageView>(R.id.selectedImage))
 
-                selectedPicture = videoList[position].path
+                selectedPicture = imageList[position].path
             }
 
         })
@@ -73,12 +74,19 @@ class MainActivity : AppCompatActivity() {
             layoutManager = GridLayoutManager(context , 3)
 
         }
+        try {
+            Glide.with(applicationContext)
+                .load(imageList[0].file)
+                .centerCrop()
+                .into(findViewById<ImageView>(R.id.selectedImage))
 
-        Glide.with(applicationContext)
-            .load(videoList[0].file)
-            .centerCrop()
-            .into(findViewById<ImageView>(R.id.selectedImage))
-        selectedPicture = videoList[0].path
+            selectedPicture = imageList[0].path
+
+        }catch (e : Exception){
+            Toast.makeText(this, "no Images found", Toast.LENGTH_SHORT).show()
+        }
+
+
     }
 
     fun postPictureButton(){
@@ -88,6 +96,62 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
     }
+
+
+    private fun askPermissionForStorage() {
+
+        val permissionListner = object : PermissionListener {
+
+            override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
+                //Toast.makeText(this@MainActivity, "Permission Given", Toast.LENGTH_SHORT).show()
+                displayFiles(path)
+                Log.d("videoList", "$imageList ")
+                setupRV()
+            }
+
+            override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
+                Toast.makeText(this@MainActivity, "permission dedo please", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onPermissionRationaleShouldBeShown(
+                p0: com.karumi.dexter.listener.PermissionRequest?,
+                p1: PermissionToken?
+            ) {
+                p1?.continuePermissionRequest()
+            }
+        }
+
+        Dexter.withContext(this)
+            .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+            .withListener(permissionListner)
+            .check()
+    }
+
+
+    private fun displayFiles(file : File){
+
+        val allFiles  = file.listFiles() ?: return
+        for(i in allFiles){
+            if(i.isDirectory || !i.isHidden){
+                //Log.d("directory found", "= ${i.name}")
+                displayFiles(i)
+
+                if(i.name.endsWith(".jpg") || i.name.endsWith(".jpeg") || i.name.endsWith(".png")) {
+
+                    val videoObject = ImageFileObject(i.name , i.path.toString() ,  i )
+                    imageList.add(videoObject)
+                    Log.d("myPath", "=  ${i.path} ")
+                    //Log.d("videofound = ", " ${i.name}")
+                }
+            }
+
+        }
+    }
+
+
+
+
+
 
     private fun getList() : MutableList<String>{
         val list = mutableListOf<String>()
@@ -139,59 +203,4 @@ class MainActivity : AppCompatActivity() {
         return list
     }
 
-
-    private fun askPermissionForStorage() {
-
-        val permissionListner = object : PermissionListener {
-
-            override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                Toast.makeText(this@MainActivity, "Permission Given", Toast.LENGTH_SHORT).show()
-                displayFiles(path)
-                Log.d("videoList", "$videoList ")
-                setupRV()
-            }
-
-            override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                Toast.makeText(this@MainActivity, "permission dedo please", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onPermissionRationaleShouldBeShown(
-                p0: com.karumi.dexter.listener.PermissionRequest?,
-                p1: PermissionToken?
-            ) {
-                p1?.continuePermissionRequest()
-            }
-        }
-
-        Dexter.withContext(this)
-            .withPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-            .withListener(permissionListner)
-            .check()
-    }
-
-
-    private fun displayFiles(file : File){
-        val allFiles  = file.listFiles()
-
-        if (allFiles == null)
-            return
-
-        Log.d("allFiles", "All files : $allFiles")
-        val newLideoList = mutableListOf<VideoObject>()
-        for(i in allFiles){
-            if(i.isDirectory || !i.isHidden){
-                //Log.d("directory found", "= ${i.name}")
-                displayFiles(i)
-
-                if(i.name.endsWith(".jpg") || i.name.endsWith(".jpeg")) {
-
-                    val videoObject = VideoObject(i.name , i.path.toString() ,  i )
-                    videoList.add(videoObject)
-                    Log.d("myPath", "=  ${i.path} ")
-                    //Log.d("videofound = ", " ${i.name}")
-                }
-            }
-
-        }
-    }
 }
