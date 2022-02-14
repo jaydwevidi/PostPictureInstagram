@@ -7,15 +7,20 @@ import android.util.Log
 import android.view.MotionEvent
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aghajari.zoomhelper.ZoomHelper
 import com.bumptech.glide.Glide
+import com.example.uploadfeed.retrofit.BuilderInstance
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.single.PermissionListener
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.File
 import java.lang.Exception
 
@@ -25,7 +30,7 @@ class MainActivity : AppCompatActivity() {
     val imageList = mutableListOf<ImageFileObject>()
     private lateinit var selectedPicture : String
 
-
+    val TAG = "Jay MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +44,62 @@ class MainActivity : AppCompatActivity() {
 
         ZoomHelper.addZoomableView(findViewById<ImageView>(R.id.selectedImage))
         zoomFunctionality()
+
+        findViewById<TextView>(R.id.galleryTV).setOnClickListener {
+
+            val mFile = imageList[0].file
+
+            val filePart = MultipartBody.Part.createFormData(
+                "file",
+                mFile.name,
+                RequestBody.create(MediaType.parse("image/*"), mFile)
+            )
+
+            val description : RequestBody = RequestBody.create(
+                MediaType.parse("text/plain"),
+                "This is a sample description by Jay Dwivedi pakka"
+            )
+
+            val id : RequestBody = RequestBody.create(
+                MediaType.parse("text/plain"),
+                    "211"
+                )
+
+
+            val hashtag : RequestBody = RequestBody.create(
+                MediaType.parse("text/plain"),
+                "[\"#frds\",\"#care\"]"
+            )
+
+
+
+            lifecycleScope.launchWhenCreated {
+                val response = try {
+                    BuilderInstance.builderAPI.addToFeed(
+                        id ,
+                        description ,
+                        filePart,
+                        hashtag
+                    )
+                }
+
+                catch (e: Exception) {
+                    Log.d(TAG, "onCreate: login Exception $e  , ${e.message}")
+                    return@launchWhenCreated
+                }
+
+                if(response.isSuccessful){
+                    val body = response.body()
+                    Log.d(TAG, "onCreate: response successful ${response.body()}")
+                }
+                else{
+                    Log.d(TAG, "onCreate: response unsuccessful")
+                    Toast.makeText(this@MainActivity, "some Error Occurred", Toast.LENGTH_SHORT)
+                        .show()
+
+                }
+            }
+        }
     }
 
     private fun zoomFunctionality(){
