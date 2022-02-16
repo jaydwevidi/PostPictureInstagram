@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
             val mFile = imageList[0].file
 
             val filePart = MultipartBody.Part.createFormData(
-                "file",
+                "image",
                 mFile.name,
                 RequestBody.create(MediaType.parse("image/*"), mFile)
             )
